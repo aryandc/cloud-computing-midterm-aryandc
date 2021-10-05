@@ -1,3 +1,5 @@
 app/node_modules/
 app/build/
+app/src/config.json
 claudia-app/node_modules/
+claudia-app/config.json
