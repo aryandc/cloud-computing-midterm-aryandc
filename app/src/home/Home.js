@@ -113,6 +113,7 @@ const Home = () => {
         setUserSession(session);
         var idToken = session.getIdToken().jwtToken;
         setCognitoUser({ ...cognitoUser, idToken });
+        console.log('IDTOKEN: ', idToken)
       });
     });
   };
@@ -334,7 +335,6 @@ const Home = () => {
         })
         .then((resp) => {
           setSongList(resp.data.songList);
-          console.log("HERERERERERE");
           setStartKeyList([resp.data.lastEvaluatedKey]);
           setPageNumber(1);
         });
@@ -371,7 +371,7 @@ const Home = () => {
 
   // prints out cognito user
   useEffect(() => {
-    console.log(cognitoUser);
+    console.log('user Details: ', cognitoUser);
   }, [showEdit, cognitoUser, songList]);
 
   // JSX Code to render web page

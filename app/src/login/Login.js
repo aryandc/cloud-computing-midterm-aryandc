@@ -5,6 +5,8 @@ import * as AWS from "aws-sdk/global";
 import { AuthContext } from "../context/AuthContext";
 import { useHistory } from "react-router";
 
+import Config from '../config.json'
+
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -49,8 +51,8 @@ const Login = () => {
     );
 
     var poolData = {
-      UserPoolId: "us-west-2_lWpXg0QJj", // Your user pool id here
-      ClientId: "hibuhib2636nm4cj5qdk1iovd", // Your client id here
+      UserPoolId: Config.userPoolID, // Your user pool id here
+      ClientId: Config.clientID, // Your client id here
     };
 
     console.log("poolData", poolData);
@@ -69,16 +71,10 @@ const Login = () => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (res) => {
         var accessToken = res.getAccessToken().getJwtToken();
-
-        /* Use the idToken for Logins Map when Federating User Pools with identity pools or when passing through an Authorization Header to an API Gateway Authorizer */
-        // var idToken = res.idToken.jwtToken;
-        // console.log('accessToken: ', accessToken)
-        // console.log('idToken: ', idToken)
-
-        AWS.config.region = "us-west-2";
+        AWS.config.region = Config.region;
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: "us-west-2:9434f3a5-195a-4d45-81a6-47bd009e92b2",
-          Logins: {
+          IdentityPoolId: Config.identityPoolID,
+          Logins: { // TODO - Change it to "cognito-idp.<YOUR REGION>.amazonaws.com/<YOUR USER POOL ID>"
             "cognito-idp.us-west-2.amazonaws.com/us-west-2_lWpXg0QJj": res
               .getIdToken()
               .getJwtToken(),
@@ -187,7 +183,7 @@ const Login = () => {
               component="form"
               noValidate
               onSubmit={handleSubmit}
-              sx={{ mt: 1, width: 500 }}
+              sx={{ mt: 1, maxWidth: '400px' }}
             >
               <TextField
                 margin="normal"

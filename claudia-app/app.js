@@ -1,3 +1,4 @@
+import Config from './config.json'
 var ApiBuilder = require("claudia-api-builder");
 var api = new ApiBuilder();
 var AWS = require("aws-sdk");
@@ -6,9 +7,9 @@ var uuid = require("uuid");
 
 module.exports = api;
 
-api.registerAuthorizer("midterm-aryandc-auth-pool", {
+api.registerAuthorizer(Config.userPoolName, {
   providerARNs: [
-    "arn:aws:cognito-idp:us-west-2:003344594004:userpool/us-west-2_lWpXg0QJj",
+    Config.userPoolARN,
   ],
 });
 

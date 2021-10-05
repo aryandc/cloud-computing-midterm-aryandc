@@ -1,9 +1,10 @@
+import Config from '../config.json'
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
 // User pool data
 const poolData = {
-    UserPoolId: 'us-west-2_lWpXg0QJj',
-    ClientId: 'hibuhib2636nm4cj5qdk1iovd'
+    UserPoolId: Config.userPoolID,
+    ClientId: Config.clientID
 }
 
 export const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
