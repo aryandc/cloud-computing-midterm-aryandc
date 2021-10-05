@@ -102,13 +102,13 @@ Link to the website: [music-library.ga](https://music-library.ga/)
 * For Post and Put method, add to the body of the request in json format as show below:
 ```
 {
-        "album": "After Hours",
-        "artist": "The Weeknd",
-        "song": "Blinding Light (Audio)",
-        "cover_img": "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Weeknd_-_After_Hours.png",
-        "release_year": 2020,
-        "uid": "54b01de0-2404-11ec-9dd6-73fcf7773ed8",
-        "youtube_link": "https://www.youtube.com/watch?v=4NRXx6U8ABQ&list=PLPRWtKgY2MOu8dPE7sMxQZ07PS1mLqid9&index=9"
-    }
+  "album": "After Hours",
+  "artist": "The Weeknd",
+  "song": "Blinding Light (Audio)",
+  "cover_img": "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Weeknd_-_After_Hours.png",
+  "release_year": 2020,
+  "uid": "54b01de0-2404-11ec-9dd6-73fcf7773ed8",
+  "youtube_link": "https://www.youtube.com/watch?v=4NRXx6U8ABQ&list=PLPRWtKgY2MOu8dPE7sMxQZ07PS1mLqid9&index=9"
+}
 ```
 
