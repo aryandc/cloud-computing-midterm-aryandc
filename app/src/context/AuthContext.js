@@ -3,6 +3,7 @@ import { userPool } from "../authentication/Auth";
 
 export const AuthContext = createContext();
 
+// stores cognito user context
 export const AuthProvider = (props) => {
   const [cognitoUser, setCognitoUser] = useState(null);
 

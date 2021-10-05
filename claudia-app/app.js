@@ -12,78 +12,63 @@ api.registerAuthorizer("midterm-aryandc-auth-pool", {
   ],
 });
 
-api.get(
-  "/lockedMessages",
-  (req) => {
-    return "locked message: " + req;
-  },
-  {
-    cognitoAuthorizer: "midterm-aryandc-auth-pool",
-    authorizationScope: ["email"],
-  }
-);
+// // gets the full list of songs
+// api.get(
+//   "/songs",
+//   (req) => {
+//     var params = { TableName: "songs" };
+//     return db
+//       .scan(params)
+//       .promise()
+//       .then((resp) => resp.Items);
+//   },
+//   {
+//     cognitoAuthorizer: "midterm-aryandc-auth-pool",
+//     authorizationScope: ["email"],
+//   }, { success: 200 }
+// );
 
-api.get(
-  "/hello",
-  () => {
-    return "Hello from Aryan Claudia";
-  },
-  {
-    cognitoAuthorizer: "midterm-aryandc-auth-pool",
-    authorizationScope: ["email"],
-  }
-);
+// // gets the song with given uid
+// api.get("/songs/{uid}", (req) => {
+//   var params = {
+//     TableName: "songs",
+//     FilterExpression: "#uid = :uid",
+//     ExpressionAttributeNames: {
+//       "#uid": "uid",
+//     },
+//     ExpressionAttributeValues: {
+//       ":uid": req.pathParams.uid,
+//     },
+//   };
 
-api.get(
-  "/songs",
-  (req) => {
-    var params = { TableName: "songs" };
-    return db
-      .scan(params)
-      .promise()
-      .then((resp) => resp.Items);
-  },
-  {
-    cognitoAuthorizer: "midterm-aryandc-auth-pool",
-    authorizationScope: ["email"],
-  }
-);
+//   return db
+//     .scan(params)
+//     .promise()
+//     .then((resp) => resp.Items);
+// }, { success: 200 });
 
-api.get("/songs/{uid}", (req) => {
-  var params = {
-    TableName: "songs",
-    FilterExpression: "#uid = :uid",
-    ExpressionAttributeNames: {
-      "#uid": "uid",
-    },
-    ExpressionAttributeValues: {
-      ":uid": req.pathParams.uid,
-    },
-  };
+// // gets all songs created by user
+// api.get("/songs/user/{username}", (req) => {
+//   var params = {
+//     TableName: "songs",
+//     FilterExpression: "#username=:u",
+//     ExpressionAttributeNames: {
+//       "#username": "username",
+//     },
+//     ExpressionAttributeValues: {
+//       ":u": req.pathParams.username,
+//     },
+//   };
+//   return db
+//     .scan(params)
+//     .promise()
+//     .then((resp) => resp.Items);
+// }, {
+//     cognitoAuthorizer: "midterm-aryandc-auth-pool",
+//     authorizationScope: ["email"],
+//   }, { success: 200 });
 
-  return db
-    .scan(params)
-    .promise()
-    .then((resp) => resp.Items);
-});
-
-api.get("/songs/user/{username}", (req) => {
-  var params = {
-    TableName: "songs",
-    FilterExpression: "#username=:u",
-    ExpressionAttributeNames: {
-      "#username": "username",
-    },
-    ExpressionAttributeValues: {
-      ":u": req.pathParams.username,
-    },
-  };
-  return db
-    .scan(params)
-    .promise()
-    .then((resp) => resp.Items);
-});
-
+// gets 10 songs from the startKey
 api.get(
   "/songs/next/{startKey}",
   (req) => {
@@ -110,6 +95,8 @@ api.get(
       .promise()
       .then((resp) => {
         return {
+          status: 200,
+          startKey: startKey,
           songList: resp.Items,
           lastEvaluatedKey: resp.LastEvaluatedKey,
         };
@@ -118,9 +105,11 @@ api.get(
   {
     cognitoAuthorizer: "midterm-aryandc-auth-pool",
     authorizationScope: ["email"],
-  }
+  },
+  { success: 200 }
 );
 
+// gets first 10 songs in the dynamodb database
 api.get(
   "/songs/next",
   (req) => {
@@ -133,6 +122,7 @@ api.get(
       .promise()
       .then((resp) => {
         return {
+          status: 200,
           songList: resp.Items,
           lastEvaluatedKey: resp.LastEvaluatedKey,
         };
@@ -145,30 +135,11 @@ api.get(
   {
     cognitoAuthorizer: "midterm-aryandc-auth-pool",
     authorizationScope: ["email"],
-  }
-);
-
-api.delete(
-  "/songs/{uid}",
-  (req) => {
-    var uid = req.pathParams.uid;
-    var params = {
-      TableName: "songs",
-      Key: {
-        uid: uid,
-      },
-    };
-    return db
-      .delete(params)
-      .promise()
-      .then(() => "Deleted song with uid " + uid);
   },
-  {
-    cognitoAuthorizer: "midterm-aryandc-auth-pool",
-    authorizationScope: ["email"],
-  }
+  { success: 200 }
 );
 
+// delete a song with specified uid and username from the dynamo database
 api.delete(
   "/songs/user/{username}/id/{uid}",
   (req) => {
@@ -190,14 +161,22 @@ api.delete(
     return db
       .delete(params)
       .promise()
-      .then(() => "Deleted song with uid " + uid + " and username " + username);
+      .then(() => {
+        var result = {
+          status: 200,
+          message: "Deleted song with uid " + uid + " and username " + username,
+        };
+        return result;
+      });
   },
   {
     cognitoAuthorizer: "midterm-aryandc-auth-pool",
     authorizationScope: ["email"],
-  }
+  },
+  { success: 200 }
 );
 
+// update a song data with the given uid and username
 api.put(
   "/songs/user/{username}/id/{uid}",
   (req) => {
@@ -233,52 +212,27 @@ api.put(
     return db
       .update(params)
       .promise()
-      .then(
-        () =>
-          "Updated song with uid " +
-          req.pathParams.uid +
-          " and username " +
-          req.pathParams.username
-      );
+      .then(() => {
+        var result = {
+          status: 200,
+          message:
+            "Updated song with uid " +
+            req.pathParams.uid +
+            " and username " +
+            req.pathParams.username,
+        };
+
+        return result;
+      });
   },
   {
     cognitoAuthorizer: "midterm-aryandc-auth-pool",
     authorizationScope: ["email"],
-  }
-);
-
-api.put(
-  "/songs/{uid}",
-  (req) => {
-    var params = {
-      TableName: "songs",
-      Key: {
-        uid: req.pathParams.uid,
-      },
-      UpdateExpression:
-        "set artist=:ar, album=:al, song=:s, cover_img=:ci, youtube_link=:yt, release_year=:rl",
-      ExpressionAttributeValues: {
-        ":ar": req.body.artist,
-        ":al": req.body.album,
-        ":ci": req.body.cover_img,
-        ":yt": req.body.youtube_link,
-        ":rl": req.body.release_year,
-        ":s": req.body.song,
-      },
-      ReturnValues: "UPDATED_NEW",
-    };
-
-    return db
-      .update(params)
-      .promise()
-      .then(() => "Updated song with uid " + req.pathParams.uid);
   },
-  {
-    cognitoAuthorizer: "midterm-aryandc-auth-pool",
-    authorizationScope: ["email"],
-  }
+  { success: 200 }
 );
 
+// post song data to the dynamodb database
 api.post(
   "/songs",
   (req) => {
@@ -296,60 +250,27 @@ api.post(
       },
     };
 
+    if (req.body.song === "") {
+        return {
+            status: 200,
+            message: "Song field cannot be empty"
+        }
+    }
+
     return db
       .put(params)
       .promise()
       .then(() => {
-        return "Sucessfully posted data point to DynamoDB";
+        var result = {
+          status: 200,
+          message: "Sucessfully posted data point to DynamoDB",
+        };
+        return result;
       });
   },
   {
     cognitoAuthorizer: "midterm-aryandc-auth-pool",
     authorizationScope: ["email"],
   },
-  { success: 201 }
+  { success: 200 }
 );
-
-api.get("/getKeys", async (req) => {
-  let params = {
-    TableName: "songs",
-    Limit: 10,
-  };
-
-  let keys = [];
-
-  await db.scan(params, async function scanUntilDone(err, data) {
-    if (err) {
-      keys.push(err);
-    } else {
-        keys.push('1');
-      if (data.LastEvaluatedKey) {
-        params.ExclusiveStartKey = data.LastEvaluatedKey;
-
-        await dynamodb.scan(params, scanUntilDone);
-      } else {
-        return;
-      }
-    }
-  });
-
-  return keys;
-});
-
-const getAllData = async (params) => { 
-
-    console.log("Querying Table");
-    let data = await docClient.query(params).promise();
-
-    if(data['Items'].length > 0) {
-        allData = [...allData, ...data['Items']];
-    }
-
-    if (data.LastEvaluatedKey) {
-        params.ExclusiveStartKey = data.LastEvaluatedKey;
-        return await getAllData(params);
-
-    } else {
-        return data;
-    }
-}

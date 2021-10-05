@@ -68,9 +68,6 @@ const Home = () => {
   const [cognitoUser, setCognitoUser] = useContext(AuthContext);
   const [pageNumber, setPageNumber] = useState(0);
   const [userSession, setUserSession] = useState(null);
-  // const [img, setImg] = useState(
-  //   "https://images.hdqwalls.com/wallpapers/the-weeknd-colorful-paintart-4k-l3.jpg"
-  // );
   const [img, setImg] = useState(
     "https://i.pinimg.com/originals/70/96/da/7096dad7c26c252dd3fc5cb1e83dc239.jpg"
   );
@@ -103,6 +100,7 @@ const Home = () => {
   const [songData, setSongData] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
 
+  // gets cognito user session
   const getSession = () => {
     var user = userPool.getCurrentUser();
     user.getSession(function (err, session) {
@@ -115,15 +113,6 @@ const Home = () => {
         setUserSession(session);
         var idToken = session.getIdToken().jwtToken;
         setCognitoUser({ ...cognitoUser, idToken });
-        // console.log(idToken);
-        // for (let i = 0; i < result.length; i++) {
-        //   console.log(
-        //     "attribute " +
-        //       result[i].getName() +
-        //       " has value " +
-        //       result[i].getValue()
-        //   );
-        // }
       });
     });
   };
@@ -132,6 +121,7 @@ const Home = () => {
     getSession();
   }, []);
 
+  // adds song data to the dynamodb database
   const handleAdd = async (formData) => {
     let song = formData.get("song");
     let artist = formData.get("artist");
@@ -168,6 +158,7 @@ const Home = () => {
     setPrevBtn(true);
   };
 
+  // updates the song data in the dynamo database
   const handleEdit = async (formData) => {
     let song = formData.get("song");
     let artist = formData.get("artist");
@@ -221,6 +212,7 @@ const Home = () => {
     setPrevBtn(true);
   };
 
+  // delete the song data from the dynamo database
   const handleDelete = () => {
     let username = songData.username;
     let uid = songData.uid;
@@ -247,9 +239,15 @@ const Home = () => {
       });
   };
 
+  // adds/edit song data
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    if (formData.get("song") == null || formData.get("song").length === 0) {
+      alert("Song field cannot be empty!");
+      return;
+    }
+
     if (showEdit) {
       handleEdit(formData);
     } else {
@@ -257,11 +255,13 @@ const Home = () => {
     }
   };
 
+  // sign out the cognito user
   const handleSignOut = () => {
     cognitoUser.signOut();
     setCognitoUser(null);
   };
 
+  // load next page song list
   const handleNext = async () => {
     let lastEvaluatedKey = startKeyList[startKeyList.length - 1];
     if (lastEvaluatedKey == null) {
@@ -284,6 +284,7 @@ const Home = () => {
       });
   };
 
+  // loads prev page song list
   const handlePrev = async () => {
     if (pageNumber <= 1) {
       return;
@@ -322,6 +323,7 @@ const Home = () => {
     }
   };
 
+  // loads the current page number song list
   const handlePageData = async () => {
     if (pageNumber <= 1) {
       await axios
@@ -362,14 +364,19 @@ const Home = () => {
     }
   };
 
+  // renders the song list component when user/song data/form coomponent changes
   useEffect(() => {
     handlePageData();
   }, [showForm, cognitoUser, songData]);
 
-  useEffect(() => {}, [showEdit, cognitoUser, songList]);
+  // prints out cognito user
+  useEffect(() => {
+    console.log(cognitoUser);
+  }, [showEdit, cognitoUser, songList]);
 
+  // JSX Code to render web page
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} sx={{ mb: 0 }}>
       <StyledSpeedDial
         ariaLabel="SpeedDial replacing the navbar"
         icon={<LibraryMusicIcon />}
@@ -456,7 +463,7 @@ const Home = () => {
                       Artist: {songData.artist}
                     </Typography>
                   </CardContent>
-                  <CardActions sx={{ p: 1 }}>
+                  <CardActions sx={{ p: 1, float: "right", m: 1 }}>
                     {cognitoUser && cognitoUser.username == songData.username && (
                       <Button
                         sx={{ borderRadius: 20 }}
@@ -500,9 +507,13 @@ const Home = () => {
           sx={{ p: 10 }}
           square
         >
-          <Grid item xs={12} sm={8} md={12} component={Paper} elevation={0}>
-            <h1>Music Library</h1>
-          </Grid>
+          {!showForm && (
+            <Grid item xs={12} sm={8} md={12} component={Paper} elevation={0}>
+              <h1>Music Library</h1>
+            </Grid>
+          )}
+          <br />
+          <br />
           {showForm && (
             <Grid
               item
@@ -555,7 +566,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="album"
                       label="Album"
@@ -566,7 +576,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="artist"
                       label="Artist"
@@ -577,7 +586,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="year"
                       label="Release Year"
@@ -590,7 +598,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="cover"
                       label="Cover Image"
@@ -603,7 +610,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="link"
                       label="Youtube Link"
@@ -654,7 +660,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="album"
                       label="Album"
@@ -664,7 +669,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="artist"
                       label="Artist"
@@ -674,7 +678,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="year"
                       label="Release Year"
@@ -684,7 +687,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="cover"
                       label="Cover Image"
@@ -694,7 +696,6 @@ const Home = () => {
                     />
                     <TextField
                       margin="normal"
-                      required
                       fullWidth
                       id="link"
                       label="Youtube Link"
@@ -718,16 +719,13 @@ const Home = () => {
           {!showForm && (
             <>
               <br />
-              <br />
+
               <TableContainer component={Paper}>
                 <Table sx={{ m: 0, width: "100%" }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
                       <StyledTableCell>Song</StyledTableCell>
                       <StyledTableCell>Album</StyledTableCell>
-                      {/* <TStyledTableCell align="right">Artist</StyledTableCell>
-                  <StyledTableCell align="right">Release Year</StyledTableCell>
-                  <StyledTableCell align="right">Link</StyledTableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -756,13 +754,6 @@ const Home = () => {
                             {row.song}
                           </StyledTableCell>
                           <StyledTableCell>{row.album}</StyledTableCell>
-                          {/* <StyledTableCell align="right">{row.artist}</StyledTableCell>
-                      <StyledTableCell align="right">{row.release_year}</StyledTableCell>
-                      <StyledTableCell align="right">
-                        <a href={row.youtube_link} target="_blank">
-                          <YouTubeIcon />
-                        </a>
-                      </StyledTableCell> */}
                         </TableRow>
                       ))}
                   </TableBody>
@@ -771,14 +762,12 @@ const Home = () => {
             </>
           )}
 
-          <Grid
-            container
-          >
+          <Grid container>
             <Grid item xs={5}>
               {prevBtn && (
                 <Button
                   variant="outlined"
-                  sx={{ p: 1, mt: 6, mr: 2 }}
+                  sx={{ p: 1, mt: 4, mr: 2 }}
                   onClick={handlePrev}
                   disabled={pageNumber <= 1 ? true : false}
                 >
@@ -788,7 +777,10 @@ const Home = () => {
             </Grid>
             <Grid item xs={2}>
               {(nextBtn || prevBtn) && (
-                <Typography sx={{ p: 1, mt: 6, flexGrow: 1, textAlign: 'center' }} color="text.secondary">
+                <Typography
+                  sx={{ p: 1, mt: 4, flexGrow: 1, textAlign: "center" }}
+                  color="text.secondary"
+                >
                   {pageNumber}
                 </Typography>
               )}
@@ -797,7 +789,7 @@ const Home = () => {
               {nextBtn && (
                 <Button
                   variant="outlined"
-                  sx={{ p: 1, mt: 6, float: "right" }}
+                  sx={{ p: 1, mt: 4, float: "right" }}
                   onClick={handleNext}
                   disabled={
                     startKeyList.length > 0 &&

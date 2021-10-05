@@ -15,6 +15,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
+import LoginIcon from '@mui/icons-material/Login';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();
@@ -26,12 +27,7 @@ const Login = () => {
   const [showCode, setShowCode] = useState(false);
   const [cognitoUser, setCognitoUser] = useContext(AuthContext);
 
-  // setUserPoolId("us-west-2_lWpXg0QJj")
-  // setIdentityPoolId("us-west-2:9434f3a5-195a-4d45-81a6-47bd009e92b2");
-  // setClientId("hibuhib2636nm4cj5qdk1iovd");
-  // setRegion("us-west-2");
-  // setCognitoURL("cognito-idp.us-west-2.amazonaws.com/us-west-2_lWpXg0QJj");
-
+  // handles login/sign up
   const handleSubmit = (e) => {
     e.preventDefault();
     const credential = new FormData(e.currentTarget);
@@ -42,6 +38,7 @@ const Login = () => {
     }
   };
 
+  // logs user in and set cognitoUser state with user cognito information
   const handleLogin = async (credential) => {
     const authenticationData = {
       Username: credential.get("username"),
@@ -107,6 +104,7 @@ const Login = () => {
     });
   };
 
+  // signup a new user with auto confirmation of email
   const handleSignUp = async (credential) => {
     let attributeList = [];
     var dataEmail = {
@@ -134,10 +132,12 @@ const Login = () => {
     );
   };
 
+  // change form based on login/sign up
   const handleForm = () => {
     setShowLogin(!showLogin);
   };
 
+  // render the login webpage
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -148,7 +148,8 @@ const Login = () => {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: "url(https://source.unsplash.com/random)",
+            backgroundImage:
+              "url(https://i.pinimg.com/originals/70/96/da/7096dad7c26c252dd3fc5cb1e83dc239.jpg)",
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light"
@@ -168,19 +169,25 @@ const Login = () => {
               alignItems: "center",
             }}
           >
+            <Grid item xs={12} sm={8} md={12} component={Paper} elevation={0}>
+            <Typography component="h1" variant="div">
+              {'Music Library'}
+            </Typography>
+            </Grid>
+            <br/>
+            <br/>
+            <br/>
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
+              {showLogin ? <LoginIcon/> : <LockOutlinedIcon />}
             </Avatar>
             <Typography component="h1" variant="h5">
-              {showLogin
-                ? "Login"
-                : "Sign up"}
+              {showLogin ? "Login" : "Sign up"}
             </Typography>
             <Box
               component="form"
               noValidate
               onSubmit={handleSubmit}
-              sx={{ mt: 1 }}
+              sx={{ mt: 1, width: 500 }}
             >
               <TextField
                 margin="normal"
@@ -228,10 +235,6 @@ const Login = () => {
                   autoComplete="code"
                 />
               )}
-              {/* <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              /> */}
               <Button
                 type="submit"
                 fullWidth
