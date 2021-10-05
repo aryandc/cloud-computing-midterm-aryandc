@@ -12,62 +12,6 @@ api.registerAuthorizer("midterm-aryandc-auth-pool", {
   ],
 });
 
-// // gets the full list of songs
-// api.get(
-//   "/songs",
-//   (req) => {
-//     var params = { TableName: "songs" };
-//     return db
-//       .scan(params)
-//       .promise()
-//       .then((resp) => resp.Items);
-//   },
-//   {
-//     cognitoAuthorizer: "midterm-aryandc-auth-pool",
-//     authorizationScope: ["email"],
-//   }, { success: 200 }
-// );
-
-// // gets the song with given uid
-// api.get("/songs/{uid}", (req) => {
-//   var params = {
-//     TableName: "songs",
-//     FilterExpression: "#uid = :uid",
-//     ExpressionAttributeNames: {
-//       "#uid": "uid",
-//     },
-//     ExpressionAttributeValues: {
-//       ":uid": req.pathParams.uid,
-//     },
-//   };
-
-//   return db
-//     .scan(params)
-//     .promise()
-//     .then((resp) => resp.Items);
-// }, { success: 200 });
-
-// // gets all songs created by user
-// api.get("/songs/user/{username}", (req) => {
-//   var params = {
-//     TableName: "songs",
-//     FilterExpression: "#username=:u",
-//     ExpressionAttributeNames: {
-//       "#username": "username",
-//     },
-//     ExpressionAttributeValues: {
-//       ":u": req.pathParams.username,
-//     },
-//   };
-//   return db
-//     .scan(params)
-//     .promise()
-//     .then((resp) => resp.Items);
-// }, {
-//     cognitoAuthorizer: "midterm-aryandc-auth-pool",
-//     authorizationScope: ["email"],
-//   }, { success: 200 });
-
 // gets 10 songs from the startKey
 api.get(
   "/songs/next/{startKey}",
